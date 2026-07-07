@@ -272,7 +272,7 @@ main {
 
 /* Snabbval-chips (vanliga omvandlingar) */
 .quick-row {
-  display: flex; gap: 6px; flex-wrap: wrap;
+  display: flex; gap: 6px; flex-wrap: nowrap; overflow: hidden;
   margin-bottom: 8px; flex-shrink: 0;
 }
 .quick-btn {
@@ -330,7 +330,7 @@ footer {
   </div>
   <div class="header-right">
     <button class="share-btn" onclick="openShareModal()">📤 Dela</button>
-    <span class="version">v0.3.3</span>
+    <span class="version">v0.3.4</span>
   </div>
 </header>
 
@@ -617,7 +617,7 @@ footer {
 
 </main>
 
-<footer>TOOLBOX v0.3.3 · © 2026 Per Andersson</footer>
+<footer>TOOLBOX v0.3.4 · © 2026 Per Andersson</footer>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -1169,6 +1169,18 @@ function buildPresets(cat) {
     html += `<button class="quick-btn" onclick="setPreset('${cat}','${from}','${to}')">${label}</button>`;
   }
   wrap.innerHTML = html;
+  fitQuickRow(cat);
+}
+
+// Ta bort knappar från slutet tills raden får plats på en enda rad (inte scroll, inte radbrytning)
+function fitQuickRow(cat) {
+  const wrap = document.getElementById(`presets-${cat}`);
+  if (!wrap || wrap.offsetParent === null) return; // panelen är inte synlig just nu
+  let guard = 0;
+  while (wrap.scrollWidth > wrap.clientWidth && wrap.children.length > 1 && guard < 10) {
+    wrap.removeChild(wrap.lastElementChild);
+    guard++;
+  }
 }
 
 function syncUnitSelects(cat) {
@@ -1316,6 +1328,7 @@ function applyActivePanel(id) {
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
   const el = document.getElementById('tool-'+id);
   if (el) el.classList.add('active');
+  if (UNIT_DATA[id]) buildPresets(id); // nu synlig - bygg om och anpassa raden till bredden
 }
 
 function selectTool(id) {
@@ -1351,6 +1364,14 @@ document.addEventListener('click', (e) => {
 // ═══════════════════════════════════════════════
 //  BOOT (körs sist, efter att alla const/funktioner ovan finns)
 // ═══════════════════════════════════════════════
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (UNIT_DATA[activeTool]) buildPresets(activeTool);
+  }, 150);
+});
+
 (async function boot() {
   buildLocSelect();
   detectLoc(); // tyst i bakgrunden, inväntar ej
