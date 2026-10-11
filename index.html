@@ -96,44 +96,39 @@ header {
   font-family: var(--fu); font-size: 15px; cursor: pointer;
 }
 
-.tabs {
+.tabs-bar {
   flex-shrink: 0;
-  display: flex; gap: 6px;
-  padding: 8px 16px;
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  overflow-x: auto; scrollbar-width: none;
+}
+.tabs {
+  flex: 1; min-width: 0;
+  display: flex; gap: 6px;
+  overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
   position: relative;
 }
 .tabs::-webkit-scrollbar { display: none; }
+.tab-arrow {
+  flex-shrink: 0; width: 32px; height: 34px;
+  border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text);
+  font-size: 22px; line-height: 1; font-family: var(--fu);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: opacity 0.2s, border-color 0.2s;
+}
+.tab-arrow:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
+.tab-arrow:disabled { opacity: 0.3; cursor: default; }
 .tab {
   display: flex; align-items: center; gap: 5px;
   padding: 6px 14px; border-radius: 20px;
   border: 1px solid var(--border); background: transparent;
   color: var(--muted); font-size: 15px; font-weight: 500;
-  font-family: var(--fu); cursor: pointer; white-space: nowrap;
+  font-family: var(--fu); cursor: pointer; white-space: nowrap; flex-shrink: 0;
   transition: all 0.2s;
 }
 .tab.active { background: var(--accent); color: #1a1200; border-color: var(--accent); font-weight: 700; }
-.tab-more { opacity: 0.85; }
-
-#more-menu {
-  position: fixed; top: 98px; left: 16px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 50;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
-  min-width: 190px;
-}
-#more-menu.open { display: flex; }
-.more-item {
-  display: flex; align-items: center; gap: 9px;
-  padding: 9px 12px; border-radius: 8px; border: none;
-  background: transparent; color: var(--text);
-  font-family: var(--fu); font-size: 15px; cursor: pointer;
-  text-align: left; width: 100%; transition: background 0.15s;
-}
-.more-item:hover, .more-item.active { background: var(--border); }
-
 /* main fyller allt utrymme, ingen scroll */
 main {
   flex: 1;
@@ -283,6 +278,45 @@ main {
 }
 .quick-btn:hover, .quick-btn.active { border-color: var(--accent); color: var(--accent); }
 
+/* Tal: meddelanderad under korten */
+.num-msg {
+  flex-shrink: 0; min-height: 20px; margin-top: 8px;
+  font-size: 13px; text-align: center; color: var(--muted);
+}
+.num-msg.err { color: var(--danger); }
+.amount-input.num { letter-spacing: 0.5px; }
+
+/* Nya verktyg: Dricks, Bränsle, Matlagning */
+.tool-panel.scroll { overflow-y: auto; }
+.tool-panel.scroll > .cur-layout { flex: 0 0 auto; overflow: visible; }
+.amount-input.fixed-h { flex: 0 0 auto; height: 60px; font-size: clamp(26px, 6vw, 40px); }
+.tip-card { flex: 0 0 auto; }
+.tip-box { margin-top: 8px; }
+.tip-box .quick-row { margin: 8px 0 4px; }
+.stepper { display: flex; align-items: center; gap: 12px; }
+.step-btn {
+  width: 40px; height: 36px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--border);
+  color: var(--text); font-size: 20px; line-height: 1; font-family: var(--fu);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.step-btn:active { border-color: var(--accent); color: var(--accent); }
+.step-val { font-family: var(--fn); font-size: 20px; font-weight: 600; min-width: 28px; text-align: center; }
+.res-home { color: var(--accent); }
+.res-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 8px; }
+.res-head span { font-size: 13px; color: var(--muted); }
+.seg-row { display: flex; gap: 6px; margin-bottom: 8px; flex-shrink: 0; }
+.seg-btn {
+  flex: 1; padding: 8px 10px; border-radius: 20px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); font-size: 15px; font-weight: 500;
+  font-family: var(--fu); cursor: pointer; transition: all 0.2s;
+}
+.seg-btn.active { background: var(--accent); color: #1a1200; border-color: var(--accent); font-weight: 700; }
+.sub-block { display: none; flex: 1; flex-direction: column; min-height: 0; }
+.sub-block.active { display: flex; }
+.ing-wrap { flex: 0 0 auto !important; margin-bottom: 8px; }
+
 footer {
   flex-shrink: 0; text-align: center; padding: 6px;
   font-size: 12px; color: var(--muted); font-family: var(--fn);
@@ -298,6 +332,9 @@ footer {
   .cur-name { font-size: 15px; }
   .loc-btn, .rate-src, .rate-status { font-size: 15px; }
   .quick-btn { font-size: 17px; }
+  .num-msg { font-size: 15px; }
+  .seg-btn { font-size: 17px; }
+  .res-head span { font-size: 15px; }
   .markup-label { font-size: 15px; }
   .markup-val { font-size: 17px; }
   .markup-desc { font-size: 14px; }
@@ -318,6 +355,7 @@ footer {
     flex: 0 0 auto;
     height: 50%;
   }
+  .tool-panel.active .amount-input.fixed-h { height: 60px; }
 }
 </style>
 </head>
@@ -330,7 +368,7 @@ footer {
   </div>
   <div class="header-right">
     <button class="share-btn" onclick="openShareModal()">📤 Dela</button>
-    <span class="version">v0.3.4</span>
+    <span class="version">v1.2.2</span>
   </div>
 </header>
 
@@ -343,8 +381,11 @@ footer {
   </div>
 </div>
 
-<div class="tabs" id="tabs-wrap"></div>
-<div id="more-menu"></div>
+<div class="tabs-bar">
+  <button class="tab-arrow" id="tab-prev" onclick="glideTabs(-1)" aria-label="Bläddra bakåt">‹</button>
+  <div class="tabs" id="tabs-wrap"></div>
+  <button class="tab-arrow" id="tab-next" onclick="glideTabs(1)" aria-label="Bläddra framåt">›</button>
+</div>
 
 <main>
 
@@ -414,7 +455,7 @@ footer {
           </div>
         </div>
         <div class="breakdown" id="breakdown">
-          <div class="bd-row"><span>ECB-kurs</span><span class="bd-val" id="bd-ecb">–</span></div>
+          <div class="bd-row"><span id="bd-ecb-label">ECB-kurs</span><span class="bd-val" id="bd-ecb">–</span></div>
           <div class="bd-row"><span>Turistpåslag</span><span class="bd-val" id="bd-markup">–</span></div>
           <div class="bd-row bd-total"><span>Effektiv kurs</span><span class="bd-val" id="bd-eff">–</span></div>
         </div>
@@ -615,9 +656,200 @@ footer {
     </div>
   </div>
 
+  <!-- TAL -->
+  <div id="tool-number" class="tool-panel">
+    <div class="cur-layout">
+      <div class="quick-row" id="presets-number"></div>
+      <div class="cur-card" id="card-number-from">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-number-from">🔢</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-number-from" onchange="onNumSelChange('from')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name" id="name-number-from">–</div>
+          </div>
+        </div>
+        <input class="amount-input num" id="inp-number-from" type="text" inputmode="numeric"
+               autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+               placeholder="0" onfocus="onNumFocus('from')" oninput="onNumInput('from')">
+      </div>
+      <div class="swap-row"><button class="swap-btn" onclick="swapNum()">⇅</button></div>
+      <div class="cur-card" id="card-number-to">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-number-to">🔢</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-number-to" onchange="onNumSelChange('to')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name" id="name-number-to">–</div>
+          </div>
+        </div>
+        <input class="amount-input num result" id="inp-number-to" type="text" inputmode="numeric"
+               autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+               placeholder="0" onfocus="onNumFocus('to')" oninput="onNumInput('to')">
+      </div>
+      <div class="num-msg" id="num-msg"></div>
+    </div>
+  </div>
+
+  <!-- DRICKS -->
+  <div id="tool-tip" class="tool-panel scroll">
+    <div class="cur-layout">
+      <div class="cur-card tip-card" id="card-tip-bill">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-tip-bill">🧾</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-tip-bill" onchange="onTipCur('bill')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name">Notan</div>
+          </div>
+        </div>
+        <input class="amount-input fixed-h" id="inp-tip-bill" type="tel" inputmode="decimal"
+               placeholder="0" onfocus="this.select()" oninput="calcTip()">
+      </div>
+
+      <div class="markup-box tip-box">
+        <div class="markup-top">
+          <span class="markup-label">💝 Dricks</span>
+          <span class="markup-val" id="tip-pct-val">15 %</span>
+        </div>
+        <div class="quick-row" id="tip-chips"></div>
+        <input type="range" class="markup-slider" id="tip-slider" min="0" max="30" step="1" value="15" oninput="setTipPct(this.value)">
+      </div>
+
+      <div class="markup-box tip-box">
+        <div class="markup-top" style="margin-bottom:0">
+          <span class="markup-label">👥 Antal personer</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="stepTipPeople(-1)">−</button>
+            <span class="step-val" id="tip-people">1</span>
+            <button class="step-btn" onclick="stepTipPeople(1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="breakdown show" id="tip-res">
+        <div class="bd-row"><span>Dricks</span><span class="bd-val" id="tip-amt">–</span></div>
+        <div class="bd-row bd-total"><span>Totalt</span><span class="bd-val" id="tip-total">–</span></div>
+        <div class="bd-row" id="row-tip-pp"><span>Per person</span><span class="bd-val" id="tip-pp">–</span></div>
+        <div id="tip-home-block">
+          <div class="res-head" style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
+            <span>Omräknat till</span>
+            <select class="loc-sel" id="sel-tip-home" onchange="onTipCur('home')"></select>
+          </div>
+          <div class="bd-row"><span>Totalt</span><span class="bd-val res-home" id="tip-home-total">–</span></div>
+          <div class="bd-row" id="row-tip-home-pp"><span>Per person</span><span class="bd-val res-home" id="tip-home-pp">–</span></div>
+          <div class="markup-desc" id="tip-rate" style="margin-top:4px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRÄNSLE -->
+  <div id="tool-fuel" class="tool-panel">
+    <div class="cur-layout">
+      <div class="seg-row">
+        <button class="seg-btn active" id="seg-fuel-price" onclick="setFuelMode('price')">⛽ Pris</button>
+        <button class="seg-btn" id="seg-fuel-cons" onclick="setFuelMode('cons')">📉 Förbrukning</button>
+      </div>
+      <div class="sub-block active" id="fuel-price">
+      <div class="cur-card" id="card-fprice-from">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-fprice-from">💲</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-fprice-from" onchange="pairSel('fprice','from')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name" id="name-fprice-from">–</div>
+          </div>
+        </div>
+        <input class="amount-input" id="inp-fprice-from" type="tel" inputmode="decimal"
+               placeholder="0" onfocus="pairFocus('fprice','from')" oninput="pairInput('fprice','from')">
+      </div>
+        <div class="swap-row"></div>
+      <div class="cur-card" id="card-fprice-to">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-fprice-to">💲</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-fprice-to" onchange="pairSel('fprice','to')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name" id="name-fprice-to">–</div>
+          </div>
+        </div>
+        <input class="amount-input result" id="inp-fprice-to" type="tel" inputmode="decimal"
+               placeholder="0" onfocus="pairFocus('fprice','to')" oninput="pairInput('fprice','to')">
+      </div>
+        <div class="num-msg" id="fprice-note"></div>
+      </div>
+      <div class="sub-block" id="fuel-cons">
+      <div class="cur-card" id="card-fcons-from">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-fcons-from">⛽</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-fcons-from" onchange="pairSel('fcons','from')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name" id="name-fcons-from">–</div>
+          </div>
+        </div>
+        <input class="amount-input" id="inp-fcons-from" type="tel" inputmode="decimal"
+               placeholder="0" onfocus="pairFocus('fcons','from')" oninput="pairInput('fcons','from')">
+      </div>
+        <div class="swap-row"><button class="swap-btn" onclick="pairSwap('fcons')">⇅</button></div>
+      <div class="cur-card" id="card-fcons-to">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-fcons-to">⛽</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-fcons-to" onchange="pairSel('fcons','to')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name" id="name-fcons-to">–</div>
+          </div>
+        </div>
+        <input class="amount-input result" id="inp-fcons-to" type="tel" inputmode="decimal"
+               placeholder="0" onfocus="pairFocus('fcons','to')" oninput="pairInput('fcons','to')">
+      </div>
+        <div class="num-msg" id="fcons-note"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATLAGNING -->
+  <div id="tool-cook" class="tool-panel">
+    <div class="cur-layout">
+      <div class="sel-wrap ing-wrap">
+        <select class="cur-sel" id="sel-cook-ing" onchange="onCookIng()"></select>
+        <span class="sel-arrow">▼</span>
+      </div>
+      <div class="quick-row" id="presets-cook"></div>
+      <div class="cur-card" id="card-cook-from">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-cook-from">🍳</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-cook-from" onchange="pairSel('cook','from')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name" id="name-cook-from">–</div>
+          </div>
+        </div>
+        <input class="amount-input" id="inp-cook-from" type="tel" inputmode="decimal"
+               placeholder="0" onfocus="pairFocus('cook','from')" oninput="pairInput('cook','from')">
+      </div>
+      <div class="swap-row"><button class="swap-btn" onclick="pairSwap('cook')">⇅</button></div>
+      <div class="cur-card" id="card-cook-to">
+        <div class="cur-top">
+          <div class="cur-flag" id="flag-cook-to">🍳</div>
+          <div class="sel-wrap">
+            <select class="cur-sel" id="sel-cook-to" onchange="pairSel('cook','to')"></select>
+            <span class="sel-arrow">▼</span>
+            <div class="cur-name" id="name-cook-to">–</div>
+          </div>
+        </div>
+        <input class="amount-input result" id="inp-cook-to" type="tel" inputmode="decimal"
+               placeholder="0" onfocus="pairFocus('cook','to')" oninput="pairInput('cook','to')">
+      </div>
+      <div class="num-msg" id="cook-note"></div>
+    </div>
+  </div>
+
 </main>
 
-<footer>TOOLBOX v0.3.4 · © 2026 Per Andersson</footer>
+<footer>TOOLBOX v1.2.2 · © 2026 Per Andersson</footer>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -675,6 +907,10 @@ let activeField = 'from';
 let fromCode    = 'SEK';
 let toCode      = 'EUR';
 let locCurrency = null;
+let ratesDate   = null;      // datum för kurserna som används
+let ratesSource = 'fallback'; // live | cached | fallback
+let approxCur   = new Set();  // valutor som saknar riktig kurs (använder reservvärde)
+const RATES_KEY = 'mt_rates';
 
 const RECENT_KEY = 'mt_recent';
 const LOC_KEY    = 'mt_loc';
@@ -858,25 +1094,48 @@ function setLocBtn(state, text) {
 // ═══════════════════════════════════════════════
 //  KURSHÄMTNING
 // ═══════════════════════════════════════════════
+const FALLBACK_RATES = {EUR:1,SEK:11.02,USD:1.086,GBP:0.858,NOK:11.76,DKK:7.46,
+  CHF:0.971,JPY:163.4,AUD:1.658,CAD:1.485,NZD:1.797,CNY:7.88,
+  HKD:8.46,SGD:1.462,INR:90.8,THB:38.5,TRY:35.2,MXN:19.8,
+  BRL:6.08,ZAR:19.9,PLN:4.27,HUF:399,CZK:25.1,RON:4.98,
+  BGN:1.956,ISK:151,IDR:17500,MYR:4.97,PHP:63.5,KRW:1473,
+  TWD:35.2,ILS:4.05,AED:3.988,SAR:4.07,QAR:3.955,KWD:0.334,
+  BHD:0.409,EGP:53.2,MAD:10.9};
+
+// Lägger ihop hämtade kurser med reservvärden; valutor som saknas i källan märks som ungefärliga
+function applyRates(live, date, source) {
+  rates = { ...FALLBACK_RATES, EUR:1, ...live };
+  ratesDate = date;
+  ratesSource = source;
+  approxCur = new Set(CURRENCIES.map(c => c[0]).filter(c => c !== 'EUR' && !(c in live)));
+}
+// Kort text om kursens ursprung, t.ex. "ECB 2026-10-09"
+function rateStamp(from, to) {
+  if (ratesSource === 'fallback' || approxCur.has(from) || approxCur.has(to)) return 'ungefärlig reservkurs';
+  return ratesSource === 'cached' ? `sparad kurs ${ratesDate}` : `ECB ${ratesDate}`;
+}
+
 async function fetchRates() {
   setRateStatus('loading','Hämtar…');
   try {
     const r = await fetch('https://api.frankfurter.dev/v1/latest?base=EUR');
     const d = await r.json();
-    rates = { EUR:1, ...d.rates };
-    document.getElementById('rate-date').textContent = d.date;
+    if (!d || !d.rates || !d.date) throw new Error('ogiltigt svar');
+    applyRates(d.rates, d.date, 'live');
+    try { localStorage.setItem(RATES_KEY, JSON.stringify({ date:d.date, rates:d.rates })); } catch(_) {}
     setRateStatus('ok','Aktuell');
   } catch(_) {
-    setRateStatus('error','Offline');
-    document.getElementById('rate-date').textContent = 'fallback';
-    rates = {EUR:1,SEK:11.02,USD:1.086,GBP:0.858,NOK:11.76,DKK:7.46,
-      CHF:0.971,JPY:163.4,AUD:1.658,CAD:1.485,NZD:1.797,CNY:7.88,
-      HKD:8.46,SGD:1.462,INR:90.8,THB:38.5,TRY:35.2,MXN:19.8,
-      BRL:6.08,ZAR:19.9,PLN:4.27,HUF:399,CZK:25.1,RON:4.98,
-      BGN:1.956,ISK:151,IDR:17500,MYR:4.97,PHP:63.5,KRW:1473,
-      TWD:35.2,ILS:4.05,AED:3.988,SAR:4.07,QAR:3.955,KWD:0.334,
-      BHD:0.409,EGP:53.2,MAD:10.9};
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(RATES_KEY) || 'null'); } catch(_) {}
+    if (cached && cached.rates && cached.date) {
+      applyRates(cached.rates, cached.date, 'cached');
+      setRateStatus('error','Offline – sparad kurs');
+    } else {
+      applyRates({}, null, 'fallback');
+      setRateStatus('error','Offline');
+    }
   }
+  document.getElementById('rate-date').textContent = ratesDate || 'fallback';
 }
 function setRateStatus(state, text) {
   document.getElementById('rate-status').className = 'rate-status ' + state;
@@ -1011,6 +1270,8 @@ function renderBreakdown() {
   if (isNaN(v)||v===0) { bd.classList.remove('show'); return; }
   const {ecb,eff} = getEff();
   bd.classList.add('show');
+  const approx = ratesSource === 'fallback' || approxCur.has(fromCode) || approxCur.has(toCode);
+  document.getElementById('bd-ecb-label').textContent = approx ? 'Reservkurs (ungefärlig)' : ratesSource === 'cached' ? 'Sparad kurs' : 'ECB-kurs';
   document.getElementById('bd-ecb').textContent    = `1 ${fromCode} = ${ecb.toFixed(4)} ${toCode}`;
   document.getElementById('bd-markup').textContent = markupPct===0?'0 %':`+${markupPct.toFixed(1)} %`;
   document.getElementById('bd-eff').textContent    = `1 ${fromCode} = ${eff.toFixed(4)} ${toCode}`;
@@ -1271,6 +1532,501 @@ function setPreset(cat, from, to) {
 //  TABS
 // ═══════════════════════════════════════════════
 // ═══════════════════════════════════════════════
+//  TAL (vanliga tal ↔ binära tal ↔ romerska siffror)
+// ═══════════════════════════════════════════════
+const NUM_SYS = {
+  dec: { label:'Vanliga tal (decimal)', icon:'🔢', name:'Siffrorna 0–9',          mode:'numeric', ph:'0',      hint:'Bara heltal, siffrorna 0–9' },
+  bin: { label:'Binära tal (bas 2)',    icon:'💾', name:'Bara 0 och 1 (bas 2)',   mode:'numeric', ph:'0',      hint:'Binärt: bara 0 och 1' },
+  rom: { label:'Romerska siffror',      icon:'🏛️', name:'I V X L C D M · 1–3999', mode:'text',    ph:'MMXXVI', hint:'Romerska siffror: I V X L C D M' },
+};
+const numState = { from:'dec', to:'rom', active:'from', value:null };
+const ROMAN_VALS = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+
+function intToRoman(n) {
+  let out = '';
+  for (const [v, s] of ROMAN_VALS) { while (n >= v) { out += s; n -= v; } }
+  return out;
+}
+function romanToInt(s) {
+  const m = { I:1, V:5, X:10, L:50, C:100, D:500, M:1000 };
+  let total = 0, prev = 0;
+  for (let i = s.length - 1; i >= 0; i--) {
+    const v = m[s[i]];
+    if (v < prev) total -= v; else { total += v; prev = v; }
+  }
+  return total;
+}
+
+// Rensa bort otillåtna tecken. Blanksteg tillåts (t.ex. 1010 1010) men ignoreras vid tolkning.
+function numClean(sys, raw) {
+  let s = String(raw).toUpperCase();
+  const allowed = sys==='dec' ? /[0-9]/ : sys==='bin' ? /[01]/ : /[IVXLCDM]/;
+  let display = '', rejected = false;
+  for (const ch of s) {
+    if (/\s/.test(ch)) { display += ch; continue; }
+    if (allowed.test(ch)) display += ch; else rejected = true;
+  }
+  let core = display.replace(/\s+/g, '');
+  const cap = sys==='dec' ? 18 : sys==='bin' ? 64 : 15;
+  if (core.length > cap) { core = core.slice(0, cap); display = core; }
+  return { display, core, rejected };
+}
+
+function numParse(sys, core) {
+  if (sys === 'dec') return { v: BigInt(core) };
+  if (sys === 'bin') return { v: BigInt('0b' + core) };
+  const n = romanToInt(core);
+  if (n >= 1 && n <= 3999 && intToRoman(n) === core) return { v: BigInt(n) };
+  if (n >= 1 && n <= 3999) return { v: null, err: `Ogiltigt romerskt tal – menar du ${intToRoman(n)}?` };
+  return { v: null, err: 'Ogiltigt romerskt tal' };
+}
+
+function numFormat(sys, v) {
+  if (v === null) return { txt: '' };
+  if (sys === 'dec') return { txt: v.toString() };
+  if (sys === 'bin') return { txt: v.toString(2).replace(/\B(?=(\d{4})+$)/g, ' ') };
+  if (v < 1n)    return { txt: '', err: 'Romerska siffror saknar noll' };
+  if (v > 3999n) return { txt: '', err: 'Romerska tal går bara till 3999 (MMMCMXCIX)' };
+  return { txt: intToRoman(Number(v)) };
+}
+
+function numEl(id) { return document.getElementById(id); }
+function setNumMsg(text, isErr) {
+  const m = numEl('num-msg');
+  m.textContent = text || '';
+  m.className = 'num-msg' + (isErr && text ? ' err' : '');
+}
+function fitNumFont(inp) {
+  inp.style.fontSize = '';
+  if (!inp.value || inp.offsetParent === null) return;
+  const cs = getComputedStyle(inp);
+  const base = parseFloat(cs.fontSize);
+  const avail = inp.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const need = inp.value.length * base * 0.62; // ungefärlig teckenbredd i DM Mono / Courier
+  if (avail > 0 && need > avail) inp.style.fontSize = Math.max(14, Math.floor(base * avail / need)) + 'px';
+}
+function setNumField(side, txt) {
+  const inp = numEl(`inp-number-${side}`);
+  inp.value = txt;
+  fitNumFont(inp);
+}
+
+function recalcNum(driver) {
+  numState.active = driver;
+  const other = driver === 'from' ? 'to' : 'from';
+  const inp = numEl(`inp-number-${driver}`);
+  const sys = numState[driver];
+  const c = numClean(sys, inp.value);
+  if (c.display !== inp.value) inp.value = c.display;
+  fitNumFont(inp);
+  const rejectedMsg = c.rejected ? NUM_SYS[sys].hint : '';
+  if (!c.core) { numState.value = null; setNumField(other, ''); setNumMsg(rejectedMsg, true); return; }
+  const p = numParse(sys, c.core);
+  if (p.v === null) { numState.value = null; setNumField(other, ''); setNumMsg(p.err, true); return; }
+  numState.value = p.v;
+  const f = numFormat(numState[other], p.v);
+  if (f.err) { setNumField(other, ''); setNumMsg(f.err, true); return; }
+  setNumField(other, f.txt);
+  setNumMsg(rejectedMsg, true);
+  recordNumPair(numState.from, numState.to);
+}
+
+// Rita om båda fälten utifrån det lagrade värdet (efter byte av talsystem)
+function renderNumValue() {
+  let msg = '';
+  for (const side of ['from', 'to']) {
+    const f = numFormat(numState[side], numState.value);
+    setNumField(side, f.err ? '' : f.txt);
+    if (f.err) msg = f.err;
+  }
+  setNumMsg(msg, !!msg);
+}
+function refreshNum() {
+  if (numState.value !== null) renderNumValue(); else recalcNum(numState.active);
+}
+
+function buildNumSelects() {
+  let html = '';
+  for (const k of Object.keys(NUM_SYS)) html += `<option value="${k}">${NUM_SYS[k].label}</option>`;
+  numEl('sel-number-from').innerHTML = html;
+  numEl('sel-number-to').innerHTML   = html;
+}
+function syncNumUI() {
+  for (const side of ['from', 'to']) {
+    const sys = NUM_SYS[numState[side]];
+    numEl(`sel-number-${side}`).value = numState[side];
+    numEl(`name-number-${side}`).textContent = sys.name;
+    numEl(`flag-number-${side}`).textContent = sys.icon;
+    const inp = numEl(`inp-number-${side}`);
+    inp.setAttribute('inputmode', sys.mode);
+    inp.setAttribute('autocapitalize', numState[side] === 'rom' ? 'characters' : 'off');
+    inp.placeholder = sys.ph;
+  }
+  markNumChips();
+}
+
+function onNumInput(side) { recalcNum(side); }
+function onNumFocus(side) {
+  numState.active = side;
+  numEl('card-number-from').classList.toggle('focused', side === 'from');
+  numEl('card-number-to').classList.toggle('focused', side === 'to');
+  numEl(`inp-number-${side}`).select();
+}
+function onNumSelChange(side) {
+  const other = side === 'from' ? 'to' : 'from';
+  const code = numEl(`sel-number-${side}`).value;
+  if (code === numState[other]) numState[other] = numState[side]; // aldrig samma system på båda sidor
+  numState[side] = code;
+  syncNumUI();
+  refreshNum();
+}
+function swapNum() {
+  const vf = numEl('inp-number-from').value;
+  const vt = numEl('inp-number-to').value;
+  [numState.from, numState.to] = [numState.to, numState.from];
+  syncNumUI();
+  setNumField('from', vt);
+  setNumField('to', vf);
+  if (numState.value !== null) renderNumValue();
+}
+
+// ── Snabbval: senast använda omvandlingar först, resten av de 6 möjliga fyller på ──
+const NUM_SHORT = { dec:'Tal', bin:'Binärt', rom:'Romerskt' };
+const NUM_ALL_PAIRS = [['dec','bin'],['bin','dec'],['dec','rom'],['rom','dec'],['bin','rom'],['rom','bin']];
+
+function numChipList() {
+  const recent = recentPairs.number || [];
+  const rest = NUM_ALL_PAIRS.filter(p => !recent.some(r => r[0]===p[0] && r[1]===p[1]));
+  return [...recent, ...rest];
+}
+function buildNumPresets() {
+  let html = '';
+  for (const [f, t] of numChipList()) {
+    html += `<button class="quick-btn" data-from="${f}" data-to="${t}" onclick="setNumPreset('${f}','${t}')">${NUM_SHORT[f]} → ${NUM_SHORT[t]}</button>`;
+  }
+  numEl('presets-number').innerHTML = html;
+  fitQuickRow('number');
+  markNumChips();
+}
+function markNumChips() {
+  document.querySelectorAll('#presets-number .quick-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.from === numState.from && b.dataset.to === numState.to);
+  });
+}
+function recordNumPair(f, t) {
+  const cur = recentPairs.number || [];
+  if (cur[0] && cur[0][0] === f && cur[0][1] === t) return;
+  recentPairs.number = [[f, t], ...cur.filter(p => !(p[0]===f && p[1]===t))].slice(0, 6);
+  saveRecentPairs('number');
+  buildNumPresets();
+}
+function setNumPreset(from, to) {
+  numState.from = from;
+  numState.to = to;
+  syncNumUI();
+  refreshNum();
+}
+
+function refreshNumLayout() {
+  buildNumPresets();
+  fitNumFont(numEl('inp-number-from'));
+  fitNumFont(numEl('inp-number-to'));
+}
+function initNumber() {
+  recentPairs.number = loadRecentPairs('number');
+  buildNumSelects();
+  buildNumPresets();
+  syncNumUI();
+}
+
+// ═══════════════════════════════════════════════
+//  GEMENSAMT för tvåkortsverktygen (Bränsle, Matlagning)
+// ═══════════════════════════════════════════════
+const PAIR = {};
+function pairFocus(key, side) {
+  PAIR[key].active = side;
+  document.getElementById(`card-${key}-from`).classList.toggle('focused', side==='from');
+  document.getElementById(`card-${key}-to`).classList.toggle('focused', side==='to');
+  document.getElementById(`inp-${key}-${side}`).select();
+}
+function pairInput(key, side) { PAIR[key].active = side; PAIR[key].calc(side); }
+function pairSel(key, side) {
+  const P = PAIR[key];
+  P[side] = document.getElementById(`sel-${key}-${side}`).value;
+  P.sync();
+  if (P.save) P.save();
+  P.calc(P.active);
+}
+function pairSwap(key) {
+  const P = PAIR[key];
+  [P.from, P.to] = [P.to, P.from];
+  const a = document.getElementById(`inp-${key}-from`), b = document.getElementById(`inp-${key}-to`);
+  [a.value, b.value] = [b.value, a.value];
+  P.sync();
+  if (P.save) P.save();
+}
+function pairFillSelect(key, side, html) { document.getElementById(`sel-${key}-${side}`).innerHTML = html; }
+function fmtSmart(n) {
+  if (!isFinite(n)) return '';
+  const a = Math.abs(n);
+  return String(parseFloat(n.toFixed(a >= 100 ? 0 : a >= 10 ? 1 : 2)));
+}
+const NO_DEC = ['JPY','KRW','IDR','HUF','ISK'];
+function fmtMoney(n, code) {
+  if (!isFinite(n)) return '–';
+  const d = NO_DEC.includes(code) ? 0 : 2;
+  return n.toLocaleString('sv-SE', { minimumFractionDigits:d, maximumFractionDigits:d }) + ' ' + code;
+}
+function effRate(from, to) { return ((rates[to]||1) / (rates[from]||1)) * (1 + markupPct/100); }
+function currencyOptions() {
+  let html = '';
+  for (const [code,f,n] of CURRENCIES) html += `<option value="${code}">${f} ${code} – ${n}</option>`;
+  return html;
+}
+
+// ═══════════════════════════════════════════════
+//  DRICKS (dricks + dela notan)
+// ═══════════════════════════════════════════════
+const TIP_KEY = 'mt_tip';
+const tipState = { bill:'USD', home:'SEK', pct:15, people:1 };
+const TIP_CHIPS = [10, 15, 18, 20];
+
+function saveTip() {
+  try { localStorage.setItem(TIP_KEY, JSON.stringify({ bill:tipState.bill, home:tipState.home, pct:tipState.pct })); } catch(_) {}
+}
+function initTip() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(TIP_KEY) || 'null'); } catch(_) {}
+  if (saved) {
+    if (CMAP[saved.bill]) tipState.bill = saved.bill;
+    if (CMAP[saved.home]) tipState.home = saved.home;
+    if (typeof saved.pct === 'number' && saved.pct >= 0 && saved.pct <= 30) tipState.pct = saved.pct;
+  } else if (locCurrency && locCurrency !== tipState.home && CMAP[locCurrency]) {
+    tipState.bill = locCurrency;
+  }
+  document.getElementById('sel-tip-bill').innerHTML = currencyOptions();
+  document.getElementById('sel-tip-home').innerHTML = currencyOptions();
+  document.getElementById('sel-tip-bill').value = tipState.bill;
+  document.getElementById('sel-tip-home').value = tipState.home;
+  let chips = '';
+  for (const c of TIP_CHIPS) chips += `<button class="quick-btn" data-pct="${c}" onclick="setTipPct(${c})">${c} %</button>`;
+  document.getElementById('tip-chips').innerHTML = chips;
+  setTipPct(tipState.pct, true);
+}
+function onTipCur(which) {
+  tipState[which] = document.getElementById('sel-tip-'+which).value;
+  if (which === 'bill') document.getElementById('flag-tip-bill').textContent = CMAP[tipState.bill][1];
+  saveTip();
+  calcTip();
+}
+function setTipPct(v, noSave) {
+  tipState.pct = Number(v);
+  document.getElementById('tip-slider').value = tipState.pct;
+  document.getElementById('tip-pct-val').textContent = tipState.pct + ' %';
+  document.querySelectorAll('#tip-chips .quick-btn').forEach(b => b.classList.toggle('active', Number(b.dataset.pct) === tipState.pct));
+  if (!noSave) saveTip();
+  calcTip();
+}
+function stepTipPeople(d) {
+  tipState.people = Math.min(20, Math.max(1, tipState.people + d));
+  document.getElementById('tip-people').textContent = tipState.people;
+  calcTip();
+}
+function calcTip() {
+  const $ = id => document.getElementById(id);
+  $('flag-tip-bill').textContent = CMAP[tipState.bill][1];
+  const bill = sanitize($('inp-tip-bill').value);
+  const multi = tipState.people > 1;
+  const sameCur = tipState.bill === tipState.home;
+  $('row-tip-pp').style.display = multi ? '' : 'none';
+  $('row-tip-home-pp').style.display = multi ? '' : 'none';
+  $('tip-home-block').style.display = sameCur ? 'none' : '';
+  if (!sameCur) {
+    const rr = effRate(tipState.bill, tipState.home);
+    const mk = markupPct > 0 ? ` (inkl. ${markupPct.toFixed(1).replace('.',',')} % påslag)` : '';
+    $('tip-rate').textContent = `Kurs: 1 ${tipState.bill} = ${rr.toFixed(4).replace('.',',')} ${tipState.home}${mk} · ${rateStamp(tipState.bill, tipState.home)}`;
+  }
+  if (isNaN(bill)) {
+    for (const id of ['tip-amt','tip-total','tip-pp','tip-home-total','tip-home-pp']) $(id).textContent = '–';
+    return;
+  }
+  const tip = bill * tipState.pct / 100;
+  const total = bill + tip;
+  const pp = total / tipState.people;
+  const r = effRate(tipState.bill, tipState.home);
+  $('tip-amt').textContent   = fmtMoney(tip, tipState.bill);
+  $('tip-total').textContent = fmtMoney(total, tipState.bill);
+  $('tip-pp').textContent    = fmtMoney(pp, tipState.bill);
+  $('tip-home-total').textContent = fmtMoney(total * r, tipState.home);
+  $('tip-home-pp').textContent    = fmtMoney(pp * r, tipState.home);
+}
+
+// ═══════════════════════════════════════════════
+//  BRÄNSLE (pris per gallon → per liter, l/100 km ↔ mpg)
+// ═══════════════════════════════════════════════
+const FUEL_KEY = 'mt_fuel';
+const GALLON_L = 3.78541;
+const FUEL_UNITS = [
+  // [kod, symbol, namn, omvänd?, konstant mot l/100 km]
+  ['lkm',   'l/100 km', 'Liter per 100 km',          false, 1],
+  ['kml',   'km/l',     'Kilometer per liter',       true,  100],
+  ['mpgus', 'mpg (US)', 'Miles per US gallon',       true,  235.2146],
+  ['mpguk', 'mpg (UK)', 'Miles per imperial gallon', true, 282.4809],
+];
+let fuelMode = 'price';
+
+PAIR.fprice = {
+  from:'USD', to:'SEK', active:'from',
+  sync() {
+    document.getElementById('sel-fprice-from').value = this.from;
+    document.getElementById('sel-fprice-to').value = this.to;
+    document.getElementById('flag-fprice-from').textContent = CMAP[this.from][1];
+    document.getElementById('flag-fprice-to').textContent = CMAP[this.to][1];
+    document.getElementById('name-fprice-from').textContent = 'per US-gallon (3,785 l)';
+    document.getElementById('name-fprice-to').textContent = 'per liter';
+  },
+  save() { try { localStorage.setItem(FUEL_KEY, JSON.stringify({ from:this.from, to:this.to })); } catch(_) {} },
+  calc(driver) {
+    const r = effRate(this.from, this.to);
+    const d = NO_DEC.includes(driver==='from' ? this.to : this.from) ? 1 : 2;
+    const a = document.getElementById('inp-fprice-from'), b = document.getElementById('inp-fprice-to');
+    if (driver === 'from') { const v = sanitize(a.value); b.value = isNaN(v) ? '' : (v * r / GALLON_L).toFixed(d); }
+    else                   { const v = sanitize(b.value); a.value = isNaN(v) ? '' : (v * GALLON_L / r).toFixed(d); }
+    this.note();
+  },
+  note() {
+    const r = effRate(this.from, this.to);
+    const mk = markupPct > 0 ? ` (inkl. ${markupPct.toFixed(1).replace('.',',')} % påslag)` : '';
+    document.getElementById('fprice-note').textContent = `Kurs: 1 ${this.from} = ${r.toFixed(4).replace('.',',')} ${this.to}${mk} · ${rateStamp(this.from, this.to)}`;
+  },
+};
+PAIR.fcons = {
+  from:'mpgus', to:'lkm', active:'from',
+  sync() {
+    for (const side of ['from','to']) {
+      document.getElementById(`sel-fcons-${side}`).value = this[side];
+      document.getElementById(`name-fcons-${side}`).textContent = FUEL_UNITS.find(u => u[0]===this[side])[2];
+    }
+  },
+  conv(v, fromCode, toCode) {
+    if (!(v > 0)) return NaN;
+    const f = FUEL_UNITS.find(u => u[0]===fromCode), t = FUEL_UNITS.find(u => u[0]===toCode);
+    const base = f[3] ? f[4] / v : v;   // → l/100 km
+    return t[3] ? t[4] / base : base;
+  },
+  calc(driver) {
+    const a = document.getElementById('inp-fcons-from'), b = document.getElementById('inp-fcons-to');
+    if (driver === 'from') { const v = sanitize(a.value); b.value = isNaN(v) ? '' : fmtSmart(this.conv(v, this.from, this.to)); }
+    else                   { const v = sanitize(b.value); a.value = isNaN(v) ? '' : fmtSmart(this.conv(v, this.to, this.from)); }
+  },
+};
+function initFuel() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(FUEL_KEY) || 'null'); } catch(_) {}
+  if (saved && CMAP[saved.from] && CMAP[saved.to]) { PAIR.fprice.from = saved.from; PAIR.fprice.to = saved.to; }
+  else if (locCurrency && locCurrency !== 'SEK' && CMAP[locCurrency]) PAIR.fprice.from = locCurrency;
+  pairFillSelect('fprice','from', currencyOptions());
+  pairFillSelect('fprice','to',   currencyOptions());
+  let u = '';
+  for (const x of FUEL_UNITS) u += `<option value="${x[0]}">${x[1]} – ${x[2]}</option>`;
+  pairFillSelect('fcons','from', u);
+  pairFillSelect('fcons','to',   u);
+  PAIR.fprice.sync(); PAIR.fprice.note();
+  PAIR.fcons.sync();
+}
+function setFuelMode(m) {
+  fuelMode = m;
+  document.getElementById('seg-fuel-price').classList.toggle('active', m==='price');
+  document.getElementById('seg-fuel-cons').classList.toggle('active', m==='cons');
+  document.getElementById('fuel-price').classList.toggle('active', m==='price');
+  document.getElementById('fuel-cons').classList.toggle('active', m==='cons');
+}
+
+// ═══════════════════════════════════════════════
+//  MATLAGNING (cup ↔ gram per ingrediens)
+// ═══════════════════════════════════════════════
+const COOK_UNITS = [
+  // [kod, symbol, namn, typ, faktor mot ml resp. g]
+  ['cup',  'cup',  'Cup (US)',             'vol', 236.588],
+  ['tbsp', 'tbsp', 'Matsked, US (tbsp)',   'vol', 14.7868],
+  ['tsp',  'tsp',  'Tesked, US (tsp)',     'vol', 4.92892],
+  ['dl',   'dl',   'Deciliter',            'vol', 100],
+  ['msk',  'msk',  'Matsked (15 ml)',      'vol', 15],
+  ['tsk',  'tsk',  'Tesked (5 ml)',        'vol', 5],
+  ['ml',   'ml',   'Milliliter',           'vol', 1],
+  ['g',    'g',    'Gram',                 'mass', 1],
+  ['oz',   'oz',   'Uns (ounce)',          'mass', 28.3495],
+];
+// gram per US cup (vanliga bakvärden – mjöl och socker packar sig olika)
+const COOK_ING = [
+  ['flour','Vetemjöl',125], ['sugar','Strösocker',200], ['brown','Farinsocker (packat)',213],
+  ['icing','Florsocker',120], ['butter','Smör',227], ['oats','Havregryn',90],
+  ['honey','Honung',340], ['milk','Mjölk / vatten',237], ['oil','Matolja',218],
+  ['cocoa','Kakao',85], ['salt','Salt (bordssalt)',288], ['rice','Ris (okokt)',185],
+];
+const COOK_PRESETS = [['cup','g','cup → g'],['g','cup','g → cup'],['dl','g','dl → g'],['g','dl','g → dl']];
+
+function cookDensity() { // gram per ml
+  const ing = COOK_ING.find(i => i[0]===PAIR.cook.ing);
+  return ing[2] / 236.588;
+}
+function cookToGrams(v, code) {
+  const u = COOK_UNITS.find(x => x[0]===code);
+  return u[3]==='mass' ? v*u[4] : v*u[4]*cookDensity();
+}
+function cookFromGrams(g, code) {
+  const u = COOK_UNITS.find(x => x[0]===code);
+  return u[3]==='mass' ? g/u[4] : g/cookDensity()/u[4];
+}
+PAIR.cook = {
+  from:'cup', to:'g', ing:'flour', active:'from',
+  sync() {
+    for (const side of ['from','to']) {
+      document.getElementById(`sel-cook-${side}`).value = this[side];
+      document.getElementById(`name-cook-${side}`).textContent = COOK_UNITS.find(u => u[0]===this[side])[2];
+    }
+    document.getElementById('sel-cook-ing').value = this.ing;
+    document.querySelectorAll('#presets-cook .quick-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.from===this.from && b.dataset.to===this.to);
+    });
+    const ing = COOK_ING.find(i => i[0]===this.ing);
+    document.getElementById('cook-note').textContent = `1 cup ${ing[1].toLowerCase()} ≈ ${ing[2]} g · ungefärligt värde`;
+  },
+  calc(driver) {
+    const a = document.getElementById('inp-cook-from'), b = document.getElementById('inp-cook-to');
+    if (driver === 'from') { const v = sanitize(a.value); b.value = isNaN(v) ? '' : fmtSmart(cookFromGrams(cookToGrams(v, this.from), this.to)); }
+    else                   { const v = sanitize(b.value); a.value = isNaN(v) ? '' : fmtSmart(cookFromGrams(cookToGrams(v, this.to), this.from)); }
+  },
+};
+function onCookIng() {
+  PAIR.cook.ing = document.getElementById('sel-cook-ing').value;
+  PAIR.cook.sync();
+  PAIR.cook.calc(PAIR.cook.active);
+}
+function setCookPreset(from, to) {
+  PAIR.cook.from = from; PAIR.cook.to = to;
+  PAIR.cook.sync();
+  PAIR.cook.calc(PAIR.cook.active);
+}
+function buildCookPresets() {
+  let html = '';
+  for (const [f,t,l] of COOK_PRESETS) html += `<button class="quick-btn" data-from="${f}" data-to="${t}" onclick="setCookPreset('${f}','${t}')">${l}</button>`;
+  document.getElementById('presets-cook').innerHTML = html;
+  fitQuickRow('cook');
+  PAIR.cook.sync();
+}
+function initCook() {
+  let u = '';
+  for (const x of COOK_UNITS) u += `<option value="${x[0]}">${x[1]} – ${x[2]}</option>`;
+  pairFillSelect('cook','from', u);
+  pairFillSelect('cook','to',   u);
+  let ing = '';
+  for (const i of COOK_ING) ing += `<option value="${i[0]}">${i[1]}</option>`;
+  document.getElementById('sel-cook-ing').innerHTML = ing;
+  buildCookPresets();
+}
+
+// ═══════════════════════════════════════════════
 //  DELA (QR-modal)
 // ═══════════════════════════════════════════════
 function openShareModal() {
@@ -1284,44 +2040,62 @@ function closeShareModalBg(e) {
 }
 
 // ═══════════════════════════════════════════════
-//  TABS – de 4 senast använda konverteringarna, resten under "Fler"
+//  TABS – glider: alla verktyg i en rad som kan dras, med ‹ › i ändarna
 // ═══════════════════════════════════════════════
 const TOOLS = [
   { id:'currency', icon:'💱', label:'Valuta' },
+  { id:'tip',      icon:'🧾', label:'Dricks' },
+  { id:'fuel',     icon:'⛽', label:'Bränsle' },
   { id:'length',   icon:'📏', label:'Längd' },
+  { id:'area',     icon:'📐', label:'Yta' },
+  { id:'volume',   icon:'🧴', label:'Volym' },
   { id:'weight',   icon:'⚖️', label:'Vikt' },
+  { id:'cook',     icon:'🍳', label:'Matlagning' },
   { id:'temp',     icon:'🌡️', label:'Temperatur' },
   { id:'speed',    icon:'💨', label:'Hastighet' },
-  { id:'volume',   icon:'🧴', label:'Volym' },
-  { id:'area',     icon:'📐', label:'Yta' },
+  { id:'number',   icon:'🔢', label:'Tal' },
 ];
-const TOOL_ORDER_KEY = 'mt_tool_order';
+const TOOL_LAST_KEY = 'mt_last_tool';
 
-let toolOrder = [];
+let activeTool = 'currency';
 try {
-  const saved = JSON.parse(localStorage.getItem(TOOL_ORDER_KEY) || 'null');
-  const validSaved = Array.isArray(saved) ? saved.filter(id => TOOLS.some(t => t.id===id)) : [];
-  const missing = TOOLS.map(t => t.id).filter(id => !validSaved.includes(id));
-  toolOrder = [...validSaved, ...missing];
-} catch(_) {
-  toolOrder = TOOLS.map(t => t.id);
-}
-let activeTool = toolOrder[0];
-
-function saveToolOrder() {
-  try { localStorage.setItem(TOOL_ORDER_KEY, JSON.stringify(toolOrder)); } catch(_){}
-}
+  const last = localStorage.getItem(TOOL_LAST_KEY);
+  if (TOOLS.some(t => t.id === last)) activeTool = last;
+} catch(_) {}
 
 function renderTabs() {
-  const wrap = document.getElementById('tabs-wrap');
-  const visible = toolOrder.slice(0,4);
   let html = '';
-  for (const id of visible) {
-    const t = TOOLS.find(x => x.id===id);
-    html += `<button class="tab${id===activeTool?' active':''}" onclick="selectTool('${id}')">${t.icon} ${t.label}</button>`;
+  for (const t of TOOLS) {
+    html += `<button class="tab${t.id===activeTool?' active':''}" data-id="${t.id}" onclick="selectTool('${t.id}')">${t.icon} ${t.label}</button>`;
   }
-  html += `<button class="tab tab-more" onclick="toggleMoreMenu(event)">⋯ Fler</button>`;
-  wrap.innerHTML = html;
+  document.getElementById('tabs-wrap').innerHTML = html;
+  updateTabArrows();
+}
+
+function updateTabArrows() {
+  const wrap = document.getElementById('tabs-wrap');
+  const prev = document.getElementById('tab-prev');
+  const next = document.getElementById('tab-next');
+  if (!wrap || !prev || !next) return;
+  const max = wrap.scrollWidth - wrap.clientWidth;
+  prev.disabled = wrap.scrollLeft <= 1;
+  next.disabled = wrap.scrollLeft >= max - 1;
+}
+
+function glideTabs(dir) {
+  const wrap = document.getElementById('tabs-wrap');
+  const left = wrap.scrollLeft + dir * Math.max(120, wrap.clientWidth * 0.7);
+  if (typeof wrap.scrollTo === 'function') wrap.scrollTo({ left, behavior: 'smooth' });
+  else wrap.scrollLeft = left;
+}
+
+function scrollActiveTabIntoView(smooth) {
+  const wrap = document.getElementById('tabs-wrap');
+  const btn = wrap.querySelector('.tab.active');
+  if (!btn) return;
+  const left = Math.max(0, btn.offsetLeft - (wrap.clientWidth - btn.offsetWidth) / 2);
+  if (typeof wrap.scrollTo === 'function') wrap.scrollTo({ left, behavior: smooth ? 'smooth' : 'auto' });
+  else wrap.scrollLeft = left;
 }
 
 function applyActivePanel(id) {
@@ -1329,37 +2103,19 @@ function applyActivePanel(id) {
   const el = document.getElementById('tool-'+id);
   if (el) el.classList.add('active');
   if (UNIT_DATA[id]) buildPresets(id); // nu synlig - bygg om och anpassa raden till bredden
+  if (id === 'number') refreshNumLayout();
+  if (id === 'cook') buildCookPresets();
+  if (id === 'tip') calcTip();
+  if (id === 'fuel') { PAIR.fprice.calc(PAIR.fprice.active); }
 }
 
 function selectTool(id) {
   activeTool = id;
-  toolOrder = [id, ...toolOrder.filter(x => x!==id)];
-  saveToolOrder();
-  renderTabs();
+  try { localStorage.setItem(TOOL_LAST_KEY, id); } catch(_) {}
+  document.querySelectorAll('#tabs-wrap .tab').forEach(b => b.classList.toggle('active', b.dataset.id === id));
   applyActivePanel(id);
-  closeMoreMenu();
+  scrollActiveTabIntoView(true);
 }
-
-function toggleMoreMenu(e) {
-  if (e) e.stopPropagation();
-  const menu = document.getElementById('more-menu');
-  if (menu.classList.contains('open')) { closeMoreMenu(); return; }
-  let html = '';
-  for (const t of TOOLS) {
-    html += `<button class="more-item${t.id===activeTool?' active':''}" onclick="selectTool('${t.id}')">${t.icon} ${t.label}</button>`;
-  }
-  menu.innerHTML = html;
-  menu.classList.add('open');
-}
-function closeMoreMenu() {
-  document.getElementById('more-menu').classList.remove('open');
-}
-document.addEventListener('click', (e) => {
-  const menu = document.getElementById('more-menu');
-  if (menu && menu.classList.contains('open') && !menu.contains(e.target) && !e.target.classList.contains('tab-more')) {
-    closeMoreMenu();
-  }
-});
 
 // ═══════════════════════════════════════════════
 //  BOOT (körs sist, efter att alla const/funktioner ovan finns)
@@ -1369,6 +2125,9 @@ window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     if (UNIT_DATA[activeTool]) buildPresets(activeTool);
+    if (activeTool === 'number') refreshNumLayout();
+    if (activeTool === 'cook') buildCookPresets();
+    updateTabArrows();
   }, 150);
 });
 
@@ -1380,8 +2139,15 @@ window.addEventListener('resize', () => {
   applyDefaults();
   renderAll();
   initConverters();
+  initNumber();
+  initTip();
+  initFuel();
+  initCook();
   renderTabs();
+  document.getElementById('tabs-wrap').addEventListener('scroll', updateTabArrows, { passive:true });
   applyActivePanel(activeTool);
+  scrollActiveTabIntoView(false);
+  updateTabArrows();
 })();
 </script>
 </body>
