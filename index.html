@@ -149,7 +149,8 @@ main {
 /* ── VALUTA-LAYOUT ── */
 .cur-layout {
   display: flex; flex-direction: column;
-  flex: 1; gap: 0; overflow: hidden;
+  flex: 1; gap: 0; min-height: 0;
+  overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch;
 }
 
 /* Statusrad */
@@ -187,7 +188,8 @@ main {
   border-radius: var(--r); padding: 10px 12px;
   display: flex; flex-direction: column;
   flex: 1; /* dela utrymme lika med det andra kortet */
-  transition: border-color 0.2s; min-height: 0;
+  transition: border-color 0.2s;
+  flex-shrink: 0; /* kortet krymper aldrig under sitt innehåll – panelen scrollar i stället */
 }
 .cur-card.focused { border-color: var(--accent); }
 
@@ -210,7 +212,7 @@ main {
 
 /* Sifferfält växer och fyller kortet */
 .amount-input {
-  flex: 1; width: 100%; min-height: 0;
+  flex: 1; width: 100%; min-height: 56px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 7px; color: var(--text);
   font-size: clamp(28px, 6vw, 52px);
@@ -289,6 +291,7 @@ main {
 /* Nya verktyg: Dricks, Bränsle, Matlagning */
 .tool-panel.scroll { overflow-y: auto; }
 .tool-panel.scroll > .cur-layout { flex: 0 0 auto; overflow: visible; }
+.sub-block { overflow: visible; }
 .amount-input.fixed-h { flex: 0 0 auto; height: 60px; font-size: clamp(26px, 6vw, 40px); }
 .tip-card { flex: 0 0 auto; }
 .tip-box { margin-top: 8px; }
@@ -313,9 +316,28 @@ main {
   font-family: var(--fu); cursor: pointer; transition: all 0.2s;
 }
 .seg-btn.active { background: var(--accent); color: #1a1200; border-color: var(--accent); font-weight: 700; }
-.sub-block { display: none; flex: 1; flex-direction: column; min-height: 0; }
+.sub-block { display: none; flex: 1; flex-direction: column; }
 .sub-block.active { display: flex; }
 .ing-wrap { flex: 0 0 auto !important; margin-bottom: 8px; }
+
+/* Egen sifferknappsats – iPad saknar numeriskt tangentbord */
+.kp {
+  display: none; flex-shrink: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+}
+.kp.show { display: block; }
+.kp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 520px; margin: 0 auto; }
+.kp-key {
+  height: 56px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--card); color: var(--text);
+  font-family: var(--fn); font-size: 26px; font-weight: 600;
+  cursor: pointer; touch-action: manipulation;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.kp-key:active { background: var(--border); }
+.kp-key.fn { color: var(--muted); font-family: var(--fu); font-size: 18px; font-weight: 500; }
+.kp-key.ok { background: var(--accent); color: #1a1200; border-color: var(--accent); font-family: var(--fu); font-size: 20px; font-weight: 700; }
 
 footer {
   flex-shrink: 0; text-align: center; padding: 6px;
@@ -368,7 +390,7 @@ footer {
   </div>
   <div class="header-right">
     <button class="share-btn" onclick="openShareModal()">📤 Dela</button>
-    <span class="version">v1.2.2</span>
+    <span class="version">v1.2.3</span>
   </div>
 </header>
 
@@ -544,7 +566,7 @@ footer {
         <input class="amount-input" id="inp-temp-from" type="tel" inputmode="decimal"
                placeholder="0" onfocus="onUnitFocus('temp','from')" oninput="onUnitInput('temp','from')">
       </div>
-      <div class="swap-row"><button class="swap-btn" onclick="swapUnit('temp')">⇅</button></div>
+      <div class="swap-row" style="gap:14px"><button class="swap-btn" onclick="swapUnit('temp')">⇅</button><button class="swap-btn" onclick="toggleTempSign()" aria-label="Plus/minus">±</button></div>
       <div class="cur-card" id="card-temp-to">
         <div class="cur-top">
           <div class="cur-flag">🌡️</div>
@@ -849,7 +871,8 @@ footer {
 
 </main>
 
-<footer>TOOLBOX v1.2.2 · © 2026 Per Andersson</footer>
+<div id="kp" class="kp" aria-hidden="true" onmousedown="event.preventDefault()"></div>
+<footer>TOOLBOX v1.2.3 · © 2026 Per Andersson</footer>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -1214,6 +1237,12 @@ function onInput(side) {
 function sanitize(v) {
   return parseFloat(String(v).replace(',','.').replace(/[^0-9.]/g,''));
 }
+// Som sanitize men behåller ett inledande minus (temperatur)
+function sanitizeSigned(v) {
+  const t = String(v);
+  const n = sanitize(t);
+  return (/^\s*[-−–]/.test(t) && !isNaN(n)) ? -n : n;
+}
 function fmt(n) {
   return isNaN(n) ? '' : n.toFixed(2);
 }
@@ -1477,10 +1506,10 @@ function recalcUnit(cat, driver) {
   const st = convState[cat];
   if (cat === 'temp') {
     if (driver === 'from') {
-      const v = sanitize(document.getElementById('inp-temp-from').value);
+      const v = sanitizeSigned(document.getElementById('inp-temp-from').value);
       document.getElementById('inp-temp-to').value = isNaN(v) ? '' : fmt(cToTemp(tempToC(v, st.from), st.to));
     } else {
-      const v = sanitize(document.getElementById('inp-temp-to').value);
+      const v = sanitizeSigned(document.getElementById('inp-temp-to').value);
       document.getElementById('inp-temp-from').value = isNaN(v) ? '' : fmt(cToTemp(tempToC(v, st.to), st.from));
     }
     return;
@@ -1658,11 +1687,12 @@ function syncNumUI() {
     numEl(`name-number-${side}`).textContent = sys.name;
     numEl(`flag-number-${side}`).textContent = sys.icon;
     const inp = numEl(`inp-number-${side}`);
-    inp.setAttribute('inputmode', sys.mode);
+    inp.setAttribute('inputmode', KEYPAD_ON ? 'none' : sys.mode);
     inp.setAttribute('autocapitalize', numState[side] === 'rom' ? 'characters' : 'off');
     inp.placeholder = sys.ph;
   }
   markNumChips();
+  if (typeof kpRefresh === 'function') kpRefresh();
 }
 
 function onNumInput(side) { recalcNum(side); }
@@ -2027,6 +2057,147 @@ function initCook() {
 }
 
 // ═══════════════════════════════════════════════
+//  TEMPERATUR: ± byter tecken i det fält man skriver i
+// ═══════════════════════════════════════════════
+function toggleTempSign() {
+  const side = convState.temp.active || 'from';
+  const inp = document.getElementById(`inp-temp-${side}`);
+  const v = inp.value.trim();
+  inp.value = /^[-−–]/.test(v) ? v.slice(1) : '-' + v;
+  recalcUnit('temp', side);
+}
+
+// ═══════════════════════════════════════════════
+//  SIFFERKNAPPSATS (iPad har inget numeriskt tangentbord i Safari)
+//  På automatiskt på iPad. ?keypad=1 tvingar på (t.ex. för test på PC), ?keypad=0 stänger av.
+// ═══════════════════════════════════════════════
+const KEYPAD_ON = (() => {
+  const q = new URLSearchParams(location.search).get('keypad');
+  if (q === '1') return true;
+  if (q === '0') return false;
+  const ua = navigator.userAgent || '';
+  return /iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+})();
+let kpTarget = null;
+
+function kpKind(inp) {
+  if (inp.id.startsWith('inp-number-')) {
+    const sys = numState[inp.id.endsWith('from') ? 'from' : 'to'];
+    return sys === 'bin' ? 'bin' : sys === 'rom' ? 'rom' : 'int';
+  }
+  if (inp.id.startsWith('inp-temp-')) return 'neg';
+  return 'dec';
+}
+function kpLayout(kind) {
+  const k = (label, key, cls, style) => `<button class="kp-key${cls ? ' ' + cls : ''}" data-k="${key}"${style ? ` style="${style}"` : ''}>${label}</button>`;
+  const digits = ['7','8','9','del','4','5','6','clr','1','2','3'];
+  const L = key => key === 'del' ? k('⌫','del','fn') : key === 'clr' ? k('Rensa','clr','fn') : k(key,key);
+  if (kind === 'bin') return k('0','0') + k('1','1') + L('del') + L('clr') + k('Klar','ok','ok','grid-column:1/-1');
+  if (kind === 'rom') return ['I','V','X'].map(x => k(x,x)).join('') + L('del') + ['L','C','D'].map(x => k(x,x)).join('') + L('clr') + k('M','M') + k('Klar','ok','ok','grid-column:2/-1');
+  let html = digits.map(L).join('');
+  html += k('Klar','ok','ok','grid-row:span 2');
+  if (kind === 'neg')      html += k('±','neg','fn') + k('0','0') + k('.','.');
+  else if (kind === 'int') html += k('0','0','', 'grid-column:1/4');
+  else                     html += k('0','0','', 'grid-column:1/3') + k('.','.');
+  return html;
+}
+function kpShow(inp) {
+  kpTarget = inp;
+  const kp = document.getElementById('kp');
+  kp.innerHTML = '<div class="kp-grid">' + kpLayout(kpKind(inp)) + '</div>';
+  kp.classList.add('show');
+  kp.setAttribute('aria-hidden', 'false');
+  setTimeout(() => { if (inp.scrollIntoView) inp.scrollIntoView({ block: 'nearest' }); }, 50);
+}
+function kpHide() {
+  kpTarget = null;
+  const kp = document.getElementById('kp');
+  kp.classList.remove('show');
+  kp.setAttribute('aria-hidden', 'true');
+}
+function kpRefresh() {
+  if (kpTarget && document.getElementById('kp').classList.contains('show')) kpShow(kpTarget);
+}
+function kpPress(key) {
+  const inp = kpTarget;
+  if (!inp) return;
+  if (key === 'ok') { inp.blur(); kpHide(); return; }
+  let v = inp.value;
+  const fresh = v.length > 0 && inp.selectionStart === 0 && inp.selectionEnd === v.length; // allt markerat → nästa tryck ersätter
+  if (key === 'del')      v = fresh ? '' : v.slice(0, -1);
+  else if (key === 'clr') v = '';
+  else if (key === 'neg') v = /^[-−–]/.test(v) ? v.slice(1) : '-' + v;
+  else if (key === '.')   v = fresh || v === '' || v === '-' ? (v === '-' ? '-0.' : '0.') : (v.includes('.') ? v : v + '.');
+  else                    v = (fresh ? '' : v) + key;
+  inp.value = v;
+  inp.dispatchEvent(new Event('input', { bubbles: true }));
+}
+function initKeypad() {
+  if (!KEYPAD_ON) return;
+  document.querySelectorAll('.amount-input').forEach(i => i.setAttribute('inputmode', 'none'));
+  document.getElementById('kp').addEventListener('click', e => {
+    const b = e.target.closest('.kp-key');
+    if (b) kpPress(b.dataset.k);
+  });
+  document.addEventListener('focusin', e => {
+    if (e.target.classList && e.target.classList.contains('amount-input')) kpShow(e.target);
+  });
+  document.addEventListener('pointerdown', e => {
+    if (kpTarget && !e.target.closest('.amount-input, #kp')) { kpTarget.blur(); kpHide(); }
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  DRA NED: skjuter ned appen så rubriken hamnar under iOS glaseffekt (Liquid Glass).
+//  Dra nedåt i rubrik-/flikraden → appen stannar nere 2 s och glider sedan långsamt tillbaka.
+// ═══════════════════════════════════════════════
+const PULL_HOLD_PX = 40, PULL_HOLD_MS = 2000, PULL_BACK_MS = 1600, PULL_MAX_PX = 64;
+const pullState = { tracking:false, pulling:false, x0:0, y0:0, offset:0, timer:null };
+
+function pullMove(px, ms) {
+  const b = document.body;
+  b.style.transition = ms ? `transform ${ms}ms ease-in-out` : 'none';
+  b.style.transform = px ? `translateY(${px}px)` : '';
+}
+function pullRelease(offset) {
+  clearTimeout(pullState.timer);
+  if (offset < 18) { pullMove(0, 200); return; }
+  pullMove(PULL_HOLD_PX, 180);
+  pullState.timer = setTimeout(() => {
+    pullMove(0, PULL_BACK_MS);
+    pullState.timer = setTimeout(() => { document.body.style.transition = ''; }, PULL_BACK_MS + 50);
+  }, PULL_HOLD_MS);
+}
+function initPullDown() {
+  const inTop = t => t.closest && t.closest('header, .tabs-bar');
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1 || !inTop(e.target)) return;
+    clearTimeout(pullState.timer);
+    const t = e.touches[0];
+    Object.assign(pullState, { tracking:true, pulling:false, x0:t.clientX, y0:t.clientY, offset:0 });
+  }, { passive:true });
+  document.addEventListener('touchmove', e => {
+    if (!pullState.tracking) return;
+    const t = e.touches[0];
+    const dy = t.clientY - pullState.y0, dx = t.clientX - pullState.x0;
+    if (!pullState.pulling) {
+      if (dy > 10 && dy > Math.abs(dx) * 1.3) pullState.pulling = true;
+      else if (Math.abs(dx) > 10 || dy < -10) { pullState.tracking = false; return; } // vanlig sidled-/uppåt-gest (flikraden)
+      else return;
+    }
+    pullState.offset = Math.min(PULL_MAX_PX, Math.max(0, dy * 0.7));
+    pullMove(pullState.offset, 0);
+    if (e.cancelable) e.preventDefault();
+  }, { passive:false });
+  const end = () => {
+    if (pullState.pulling) pullRelease(pullState.offset);
+    pullState.tracking = false; pullState.pulling = false;
+  };
+  document.addEventListener('touchend', end, { passive:true });
+  document.addEventListener('touchcancel', end, { passive:true });
+}
+
+// ═══════════════════════════════════════════════
 //  DELA (QR-modal)
 // ═══════════════════════════════════════════════
 function openShareModal() {
@@ -2144,6 +2315,8 @@ window.addEventListener('resize', () => {
   initFuel();
   initCook();
   renderTabs();
+  initKeypad();
+  initPullDown();
   document.getElementById('tabs-wrap').addEventListener('scroll', updateTabArrows, { passive:true });
   applyActivePanel(activeTool);
   scrollActiveTabIntoView(false);
