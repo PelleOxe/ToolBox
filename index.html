@@ -350,6 +350,41 @@ main {
 .kp-key.fn { color: var(--muted); font-family: var(--fu); font-size: 18px; font-weight: 500; }
 .kp-key.ok { background: var(--accent); color: #1a1200; border-color: var(--accent); font-family: var(--fu); font-size: 20px; font-weight: 700; }
 
+/* Primtal */
+.amount-input.small-h { flex: 0 0 auto; height: 46px; font-size: clamp(18px, 4.6vw, 26px); }
+.pr-verdict {
+  margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 16px; line-height: 1.45; min-height: 24px; word-break: break-word;
+}
+.pr-verdict.yes { border-color: #3ecf8e; }
+.pr-verdict.no  { border-color: var(--danger); }
+.pr-verdict b { font-family: var(--fn); font-weight: 600; }
+.pr-count { margin: 10px 0 2px; font-size: 22px; font-weight: 700; font-family: var(--fn); color: var(--accent); }
+.pr-sub { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.pr-nav { display: flex; gap: 6px; margin: 8px 0; }
+.pr-nav .quick-btn { flex: 1; text-align: center; padding-left: 4px; padding-right: 4px; }
+.pr-nav .quick-btn:disabled { opacity: 0.3; cursor: default; }
+.pr-goto { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+.pr-goto .clr-wrap { flex: 1; min-width: 0; }
+.clr-wrap { position: relative; }
+.clr-wrap .amount-input { padding-left: 46px; }
+.clr-x {
+  display: none; position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: var(--border); color: var(--text);
+  font-size: 22px; line-height: 1; font-family: var(--fu); cursor: pointer;
+  align-items: center; justify-content: center; padding: 0 0 2px;
+}
+.clr-wrap.has-val .clr-x { display: flex; }
+.clr-x:active { background: var(--accent); color: #1a1200; }
+.pr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--pr-w, 5.5em), 1fr)); gap: 6px; margin-top: 8px; }
+.pr-item {
+  font-family: var(--fn); font-size: 15px; text-align: center;
+  padding: 7px 2px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+}
+
 footer {
   flex-shrink: 0; text-align: center; padding: 6px;
   font-size: 12px; color: var(--muted); font-family: var(--fn);
@@ -366,6 +401,8 @@ footer {
   .loc-btn, .rate-src, .rate-status { font-size: 15px; }
   .quick-btn { font-size: 17px; }
   .num-msg { font-size: 15px; }
+  .pr-verdict { font-size: 18px; }
+  .pr-item { font-size: 17px; }
   .seg-btn { font-size: 17px; }
   .res-head span { font-size: 15px; }
   .markup-label { font-size: 15px; }
@@ -389,6 +426,7 @@ footer {
     height: 50%;
   }
   .tool-panel.active .amount-input.fixed-h { height: 60px; }
+  .tool-panel.active .amount-input.small-h { height: 46px; }
 }
 </style>
 </head>
@@ -401,7 +439,7 @@ footer {
   </div>
   <div class="header-right">
     <button class="share-btn" onclick="openShareModal()">📤 Dela</button>
-    <span class="version">v1.2.4</span>
+    <span class="version">v1.2.6</span>
   </div>
 </header>
 
@@ -692,6 +730,11 @@ footer {
   <!-- TAL -->
   <div id="tool-number" class="tool-panel">
     <div class="cur-layout">
+      <div class="seg-row">
+        <button class="seg-btn active" id="seg-num-conv" onclick="setNumMode('conv')">🔁 Omvandla</button>
+        <button class="seg-btn" id="seg-num-prime" onclick="setNumMode('prime')">🔎 Primtal</button>
+      </div>
+      <div class="sub-block active" id="num-conv">
       <div class="quick-row" id="presets-number"></div>
       <div class="cur-card" id="card-number-from">
         <div class="cur-top">
@@ -721,6 +764,55 @@ footer {
                placeholder="0" onfocus="onNumFocus('to')" oninput="onNumInput('to')">
       </div>
       <div class="num-msg" id="num-msg"></div>
+      </div>
+
+      <div class="sub-block" id="num-prime">
+        <div class="cur-card tip-card" id="card-prime-test">
+          <div class="cur-top">
+            <div class="cur-flag">🔎</div>
+            <div class="sel-wrap">
+              <div class="cur-name" style="font-size:16px;color:var(--text);font-weight:600">Är det ett primtal?</div>
+              <div class="cur-name">Skriv ett tal (högst 18 siffror)</div>
+            </div>
+          </div>
+          <div class="clr-wrap">
+            <input class="amount-input fixed-h" id="inp-prime-test" type="tel" inputmode="numeric"
+                   autocomplete="off" placeholder="0" onfocus="this.select()" oninput="onPrimeTest()"
+                   onkeydown="if(event.key==='Escape')clearField(this.id)">
+            <button class="clr-x" type="button" onmousedown="event.preventDefault()" onclick="clearField('inp-prime-test')" aria-label="Rensa">×</button>
+          </div>
+          <div class="pr-verdict" id="pr-verdict">Skriv ett tal så får du svar direkt.</div>
+        </div>
+
+        <div class="cur-card tip-card" id="card-prime-list" style="margin-top:8px">
+          <div class="cur-top">
+            <div class="cur-flag">📋</div>
+            <div class="sel-wrap">
+              <select class="cur-sel" id="sel-prime-digits" onchange="onPrimeDigits()"></select>
+              <span class="sel-arrow">▼</span>
+              <div class="cur-name">Antal siffror i primtalen</div>
+            </div>
+          </div>
+          <div class="pr-count" id="pr-count">–</div>
+          <div class="pr-sub" id="pr-range"></div>
+          <div class="pr-nav">
+            <button class="quick-btn" id="pr-first" onclick="primeNav('first')">⏮</button>
+            <button class="quick-btn" id="pr-prev" onclick="primeNav('prev')">◀ Förra</button>
+            <button class="quick-btn" id="pr-next" onclick="primeNav('next')">Nästa ▶</button>
+            <button class="quick-btn" id="pr-last" onclick="primeNav('last')">⏭</button>
+          </div>
+          <div class="pr-goto">
+            <div class="clr-wrap">
+              <input class="amount-input small-h" id="inp-prime-goto" type="tel" inputmode="numeric"
+                     autocomplete="off" placeholder="Visa från tal …" onfocus="this.select()" oninput="syncClr(this)"
+                     onkeydown="if(event.key==='Enter')primeGoto();else if(event.key==='Escape')clearField(this.id)">
+              <button class="clr-x" type="button" onmousedown="event.preventDefault()" onclick="clearField('inp-prime-goto')" aria-label="Rensa">×</button>
+            </div>
+            <button class="quick-btn" onclick="primeGoto()">Gå</button>
+          </div>
+          <div class="pr-grid" id="pr-grid"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -883,7 +975,7 @@ footer {
 </main>
 
 <div id="kp" class="kp" aria-hidden="true" onmousedown="event.preventDefault()"></div>
-<footer>TOOLBOX v1.2.4 · © 2026 Per Andersson</footer>
+<footer>TOOLBOX v1.2.6 · © 2026 Per Andersson</footer>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -2068,6 +2160,222 @@ function initCook() {
 }
 
 // ═══════════════════════════════════════════════
+//  PRIMTAL (under Tal): testa ett tal, och bläddra bland alla 1–10-siffriga primtal
+// ═══════════════════════════════════════════════
+// Antal primtal per siffergrupp (exakta, kända värden; kontrollräknade vid utveckling)
+const PRIME_COUNTS = { 1:4, 2:21, 3:143, 4:1061, 5:8363, 6:68906, 7:586081, 8:5096876, 9:45086079, 10:404204977 };
+const PRIME_PAGE = 60;
+let numMode = 'conv';
+const primeState = { digits:4, shown:[], atStart:true, atEnd:false, built:false };
+
+function setNumMode(m) {
+  numMode = m;
+  document.getElementById('seg-num-conv').classList.toggle('active', m === 'conv');
+  document.getElementById('seg-num-prime').classList.toggle('active', m === 'prime');
+  document.getElementById('num-conv').classList.toggle('active', m === 'conv');
+  document.getElementById('num-prime').classList.toggle('active', m === 'prime');
+  if (typeof kpHide === 'function') kpHide();
+  if (m === 'prime') {
+    if (!primeState.built) initPrime();
+    onPrimeTest();
+  } else {
+    refreshNumLayout();
+  }
+}
+
+// ── Test av ett tal (Miller–Rabin med BigInt, säkert under 3,3·10²⁴; faktorisering med Pollards rho) ──
+function modPowBig(b, e, m) {
+  let r = 1n; b %= m;
+  while (e > 0n) { if (e & 1n) r = r * b % m; e >>= 1n; b = b * b % m; }
+  return r;
+}
+const MR_BASES = [2n, 3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n, 37n];
+function isPrimeBig(n) {
+  if (n < 2n) return false;
+  for (const p of MR_BASES) { if (n === p) return true; if (n % p === 0n) return false; }
+  let d = n - 1n, s = 0;
+  while ((d & 1n) === 0n) { d >>= 1n; s++; }
+  for (const a of MR_BASES) {
+    let x = modPowBig(a, d, n);
+    if (x === 1n || x === n - 1n) continue;
+    let composite = true;
+    for (let i = 1; i < s; i++) { x = x * x % n; if (x === n - 1n) { composite = false; break; } }
+    if (composite) return false;
+  }
+  return true;
+}
+function gcdBig(a, b) { while (b) { const t = a % b; a = b; b = t; } return a; }
+function rhoBig(n) {
+  if (n % 2n === 0n) return 2n;
+  for (let c = 1n; c < 50n; c++) {
+    let x = 2n, y = 2n, d = 1n, it = 0;
+    while (d === 1n) {
+      x = (x * x + c) % n; y = (y * y + c) % n; y = (y * y + c) % n;
+      d = gcdBig(x > y ? x - y : y - x, n);
+      if (++it > 2000000) return null;
+    }
+    if (d !== n) return d;
+  }
+  return null;
+}
+// Returnerar { factors:[BigInt…], complete:boolean }
+function factorBig(n) {
+  const out = []; let complete = true;
+  for (let p = 2n; p < 1000n && p * p <= n; p = p === 2n ? 3n : p + 2n) {
+    while (n % p === 0n) { out.push(p); n /= p; }
+  }
+  const rec = m => {
+    if (m === 1n) return;
+    if (isPrimeBig(m)) { out.push(m); return; }
+    const d = rhoBig(m);
+    if (d === null) { out.push(m); complete = false; return; }
+    rec(d); rec(m / d);
+  };
+  rec(n);
+  out.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  return { factors: out, complete };
+}
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹' };
+function fmtBig(n) { return n.toLocaleString('sv-SE'); }
+function factorText(f) {
+  const parts = []; let i = 0;
+  while (i < f.length) {
+    let j = i; while (j < f.length && f[j] === f[i]) j++;
+    const e = j - i;
+    parts.push(fmtBig(f[i]) + (e > 1 ? String(e).split('').map(c => SUP[c]).join('') : ''));
+    i = j;
+  }
+  return parts.join(' × ');
+}
+// × i en inskrivningsruta: syns bara när rutan har innehåll; töm + fokus tillbaka (Esc gör detsamma)
+function syncClr(inp) {
+  const w = inp.parentNode;
+  if (w && w.classList.contains('clr-wrap')) w.classList.toggle('has-val', inp.value !== '');
+}
+function clearField(id) {
+  const inp = document.getElementById(id);
+  inp.value = '';
+  inp.dispatchEvent(new Event('input', { bubbles:true }));
+  syncClr(inp);
+  inp.focus();
+}
+function onPrimeTest() {
+  const inp = document.getElementById('inp-prime-test');
+  const box = document.getElementById('pr-verdict');
+  const c = numClean('dec', inp.value);
+  if (c.display !== inp.value) inp.value = c.display;
+  syncClr(inp);
+  fitNumFont(inp);
+  box.className = 'pr-verdict';
+  if (!c.core) { box.textContent = c.rejected ? 'Bara heltal, siffrorna 0–9.' : 'Skriv ett tal så får du svar direkt.'; return; }
+  const n = BigInt(c.core);
+  if (n < 2n) { box.className = 'pr-verdict no'; box.textContent = `Nej, ${n} är varken primtal eller sammansatt.`; return; }
+  if (isPrimeBig(n)) { box.className = 'pr-verdict yes'; box.innerHTML = `✅ <b>Ja</b>, ${fmtBig(n)} är ett primtal.`; return; }
+  const r = factorBig(n);
+  box.className = 'pr-verdict no';
+  box.innerHTML = r.complete
+    ? `❌ <b>Nej</b>, ${fmtBig(n)} = ${factorText(r.factors)}`
+    : `❌ <b>Nej</b>, ${fmtBig(n)} är sammansatt. Faktorerna hittades inte alla (sista delen är för tung att dela upp).`;
+}
+
+// ── Lista över alla primtal med N siffror (segmenterat såll, bläddra med Förra/Nästa) ──
+let BASE_PRIMES = null;
+function basePrimes() {
+  if (!BASE_PRIMES) {
+    const N = 100000, sv = new Uint8Array(N + 1); BASE_PRIMES = [];
+    for (let i = 2; i <= N; i++) {
+      if (!sv[i]) { BASE_PRIMES.push(i); for (let j = i * i; j <= N; j += i) sv[j] = 1; }
+    }
+  }
+  return BASE_PRIMES;
+}
+function primesInRange(lo, hi) { // [lo, hi)
+  lo = Math.max(lo, 2);
+  if (hi <= lo) return [];
+  const seg = new Uint8Array(hi - lo), lim = Math.floor(Math.sqrt(hi - 1));
+  for (const p of basePrimes()) {
+    if (p > lim) break;
+    for (let j = Math.max(p * p, Math.ceil(lo / p) * p); j < hi; j += p) seg[j - lo] = 1;
+  }
+  const out = [];
+  for (let i = 0; i < seg.length; i++) if (!seg[i]) out.push(lo + i);
+  return out;
+}
+function primesForward(from, limit, n) { // upp till n primtal ≥ from och < limit
+  const out = []; let lo = from; const W = 4096;
+  while (out.length < n && lo < limit) {
+    const hi = Math.min(lo + W, limit);
+    for (const p of primesInRange(lo, hi)) out.push(p);
+    lo = hi;
+  }
+  return out.slice(0, n);
+}
+function primesBackward(before, floor, n) { // upp till n primtal ≥ floor och < before (de n sista)
+  let out = []; let hi = before; const W = 4096;
+  while (out.length < n && hi > floor) {
+    const lo = Math.max(hi - W, floor);
+    out = primesInRange(lo, hi).concat(out);
+    hi = lo;
+  }
+  return out.slice(Math.max(0, out.length - n));
+}
+function primeBounds(d) { return { lo: Math.pow(10, d - 1), hi: Math.pow(10, d) }; }
+
+function renderPrimePage(list) {
+  const d = primeState.digits, { lo, hi } = primeBounds(d);
+  if (!list.length) return;
+  primeState.shown = list;
+  primeState.atStart = primesForward(lo, hi, 1)[0] === list[0];
+  primeState.atEnd = primesBackward(hi, lo, 1)[0] === list[list.length - 1];
+  const grid = document.getElementById('pr-grid');
+  grid.style.setProperty('--pr-w', (d * 0.62 + 1.8).toFixed(1) + 'em');
+  grid.innerHTML = list.map(v => `<div class="pr-item">${v}</div>`).join('');
+  document.getElementById('pr-range').textContent = `Visar ${fmtBig(BigInt(list[0]))} – ${fmtBig(BigInt(list[list.length - 1]))}`;
+  document.getElementById('pr-first').disabled = primeState.atStart;
+  document.getElementById('pr-prev').disabled  = primeState.atStart;
+  document.getElementById('pr-next').disabled  = primeState.atEnd;
+  document.getElementById('pr-last').disabled  = primeState.atEnd;
+}
+function primeNav(where) {
+  const d = primeState.digits, { lo, hi } = primeBounds(d), sh = primeState.shown;
+  if (where === 'first') renderPrimePage(primesForward(lo, hi, PRIME_PAGE));
+  else if (where === 'last') renderPrimePage(primesBackward(hi, lo, PRIME_PAGE));
+  else if (where === 'next' && sh.length) renderPrimePage(primesForward(sh[sh.length - 1] + 1, hi, PRIME_PAGE));
+  else if (where === 'prev' && sh.length) renderPrimePage(primesBackward(sh[0], lo, PRIME_PAGE));
+}
+function primeGoto() {
+  const d = primeState.digits, { lo, hi } = primeBounds(d);
+  const inp = document.getElementById('inp-prime-goto');
+  const c = numClean('dec', inp.value);
+  if (!c.core) return;
+  let n = Number(c.core);
+  if (n < lo) n = lo;
+  if (n >= hi) { primeNav('last'); return; }
+  renderPrimePage(primesForward(n, hi, PRIME_PAGE));
+}
+function onPrimeDigits() {
+  primeState.digits = Number(document.getElementById('sel-prime-digits').value);
+  document.getElementById('inp-prime-goto').value = '';
+  syncClr(document.getElementById('inp-prime-goto'));
+  showPrimeCount();
+  primeNav('first');
+}
+function showPrimeCount() {
+  const d = primeState.digits;
+  document.getElementById('pr-count').textContent = `${PRIME_COUNTS[d].toLocaleString('sv-SE')} primtal med ${d} ${d === 1 ? 'siffra' : 'siffror'}`;
+}
+function initPrime() {
+  primeState.built = true;
+  let opts = '';
+  for (let d = 1; d <= 10; d++) opts += `<option value="${d}">${d} ${d === 1 ? 'siffra' : 'siffror'} – ${PRIME_COUNTS[d].toLocaleString('sv-SE')} st</option>`;
+  const sel = document.getElementById('sel-prime-digits');
+  sel.innerHTML = opts;
+  sel.value = String(primeState.digits);
+  showPrimeCount();
+  primeNav('first');
+}
+
+// ═══════════════════════════════════════════════
 //  TEMPERATUR: ± byter tecken i det fält man skriver i
 // ═══════════════════════════════════════════════
 function toggleTempSign() {
@@ -2099,6 +2407,7 @@ function kpKind(inp) {
     return sys === 'bin' ? 'bin' : sys === 'rom' ? 'rom' : 'int';
   }
   if (inp.id.startsWith('inp-temp-')) return 'neg';
+  if (inp.id.startsWith('inp-prime-')) return 'int';
   return 'dec';
 }
 function kpLayout(kind) {
@@ -2156,7 +2465,7 @@ function initKeypad() {
     if (e.target.classList && e.target.classList.contains('amount-input')) kpShow(e.target);
   });
   document.addEventListener('pointerdown', e => {
-    if (kpTarget && !e.target.closest('.amount-input, #kp')) { kpTarget.blur(); kpHide(); }
+    if (kpTarget && !e.target.closest('.amount-input, #kp, .clr-x')) { kpTarget.blur(); kpHide(); }
   });
 }
 
